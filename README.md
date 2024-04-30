@@ -14,4 +14,4 @@
 
 - NetFlixGPT
     - Search Bar 
-    - Movie Suggestion
+    - Movie Suggestion---
