@@ -1,3 +1,12 @@
+# Netflix Gpt
+    - Create React App
+    - Configured Tailwind Css
+    - Header
+    - Routing of App 
+    - Login Form 
+    - Sign Up Form 
+    - Form Validation 
+    - Using UseRef Hook For form validation
 
 
 # Features
