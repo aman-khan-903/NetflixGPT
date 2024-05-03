@@ -1,81 +1,129 @@
-import React, { useRef, useState } from 'react'
-import Header from './Header'
-import { checkValidData } from '../utils/validate';
+import React, { useRef, useState } from "react";
+import Header from "./Header";
+import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
-  const [isSignInForm, setIsSignInForm]= useState(true); 
-  const [errorMessage, setErrorMessage]= useState(null); 
+  const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-
-  const handleButtonClick =()=>{
-    const message= checkValidData(email.current.value, password.current.value); 
+  const handleButtonClick = () => {
+    const message = checkValidData(email.current.value, password.current.value);
     setErrorMessage(message);
-  }
 
-  // const name= useRef(null); 
-  const email= useRef(null); 
-  const password= useRef(null); 
+    // means there is any error in data validation
+    if (message) return;
 
+    // if message(error message) is empty , it means that password are validated
+    if (!isSignInForm) {
+      // signUp logic
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + " " + errorMessage);
+        });
+    } else {
+      // signIn login
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log("Signed In Successfully" + " "+ user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log("Bhai sign In me error aa gya h due to wrong email or password");
+          console.log(errorCode+" "+errorMessage);
+        });
+    }
+    
+  };
 
-  const toggleSignInForm= ()=>{
-    setIsSignInForm(!isSignInForm); 
-  }
+  // const name= useRef(null);
+  const email = useRef(null);
+  const password = useRef(null);
 
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm);
+  };
 
   return (
-    <div >
-        <Header/>
-        <div className='absolute'>
-            <img src='https://assets.nflxext.com/ffe/siteui/vlv3/c7f07b68-7989-4ff7-a31e-11c17dcc2fea/fcf685b8-3f9f-42d8-9af3-4bb86fa5a3b8/IN-en-20240422-popsignuptwoweeks-perspective_alpha_website_large.jpg' alt='bg_Image' />
-        </div>
-        <form className='p-4 m-4 absolute top-[145px] left-[550px] bg-black w-3/12 flex flex-col opacity-80 rounded-xl text-white gap-5' onSubmit={(e)=>e.preventDefault()}>
-            <h1 className='font-bold text-4xl'>{isSignInForm ? "Sign In": "Sign Up"}</h1>
+    <div>
+      <Header />
+      <div className="absolute">
+        <img
+          src="https://assets.nflxext.com/ffe/siteui/vlv3/c7f07b68-7989-4ff7-a31e-11c17dcc2fea/fcf685b8-3f9f-42d8-9af3-4bb86fa5a3b8/IN-en-20240422-popsignuptwoweeks-perspective_alpha_website_large.jpg"
+          alt="bg_Image"
+        />
+      </div>
+      <form
+        className="p-4 m-4 absolute top-[145px] left-[550px] bg-black w-3/12 flex flex-col opacity-80 rounded-xl text-white gap-5"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <h1 className="font-bold text-4xl">
+          {isSignInForm ? "Sign In" : "Sign Up"}
+        </h1>
 
-            {
-              !isSignInForm && <>
-              <input 
-            type='text' 
-            placeholder='Full Name' 
-            className='p-4 mx-auto w-11/12 bg-gray-700 rounded-lg font-extralight font-extrabold'
+        {!isSignInForm && (
+          <>
+            <input
+              type="text"
+              placeholder="Full Name"
+              className="p-4 mx-auto w-11/12 bg-gray-700 rounded-lg font-extralight font-extrabold"
             />
-            <input 
-            type='number' 
-            placeholder='Mobile Number' 
-            className='p-4  mx-auto w-11/12 bg-gray-700 rounded-lg'
-            />
-              </>
-            }
+          </>
+        )}
 
-            <input ref={email} 
-            type='text' 
-            placeholder='Email Address' 
-            className='p-4 mx-auto w-11/12 bg-gray-700 rounded-lg'
-            />
+        <input
+          ref={email}
+          type="text"
+          placeholder="Email Address"
+          className="p-4 mx-auto w-11/12 bg-gray-700 rounded-lg"
+        />
 
-            <input ref={password}
-            type='password' 
-            placeholder='Password' 
-            className='p-4  mx-auto w-11/12 bg-gray-700 rounded-lg'
-            />
-            <span className='px-4 mt-[-20px] text-red-400 '>{errorMessage}</span>
+        <input
+          ref={password}
+          type="password"
+          placeholder="Password"
+          className="p-4  mx-auto w-11/12 bg-gray-700 rounded-lg"
+        />
+        <span className="px-4 mt-[-20px] text-red-400 ">{errorMessage}</span>
 
-            <button onClick={handleButtonClick} 
-            className='p-4 my-4  bg-red-700 py-[10px] w-11/12 mx-auto rounded-lg'>
-            {
-              isSignInForm ? "Sign In" : "Sign Up"
-            }
-            </button>
+        <button
+          onClick={handleButtonClick}
+          className="p-4 my-4  bg-red-700 py-[10px] w-11/12 mx-auto rounded-lg"
+        >
+          {isSignInForm ? "Sign In" : "Sign Up"}
+        </button>
 
-            <span className='p-4' onClick={toggleSignInForm}>
-              {
-                isSignInForm ? 
-                "New to Netflix ? Sign Up Now" : 
-                "Already Registered ? Sign In Now"
-              }
-            </span>
-        </form>
+        <span className="p-4" onClick={toggleSignInForm}>
+          {isSignInForm
+            ? "New to Netflix ? Sign Up Now"
+            : "Already Registered ? Sign In Now"}
+        </span>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
