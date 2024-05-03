@@ -4,10 +4,16 @@ import { checkValidData } from "../utils/validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -29,12 +35,33 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
+          updateProfile(auth.currentUser, {
+            displayName: name.current.value,
+            photoURL:
+              "https://media.licdn.com/dms/image/D4D35AQGujVSIXcm2gg/profile-framedphoto-shrink_400_400/0/1706072116871?e=1715360400&v=beta&t=dnb14G84b-umGykir7GVc08g4rksfB6FDQe9ie2rRWs",
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser; 
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+              navigate("/browse");
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
           console.log(user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          setErrorMessage(errorCode + " " + errorMessage);
+          setErrorMessage(errorMessage);
         });
     } else {
       // signIn login
@@ -46,20 +73,21 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log("Signed In Successfully" + " "+ user);
-          // ...
+          console.log("Signed In Successfully" + " " + user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log("Bhai sign In me error aa gya h due to wrong email or password");
-          console.log(errorCode+" "+errorMessage);
+          console.log(
+            "Bhai sign In me error aa gya h due to wrong email or password"
+          );
+          console.log(errorCode + " " + errorMessage);
         });
     }
-    
   };
 
-  // const name= useRef(null);
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
@@ -87,6 +115,7 @@ const Login = () => {
         {!isSignInForm && (
           <>
             <input
+              ref={name}
               type="text"
               placeholder="Full Name"
               className="p-4 mx-auto w-11/12 bg-gray-700 rounded-lg font-extralight font-extrabold"

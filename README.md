@@ -9,6 +9,12 @@
     - Using UseRef Hook For form validation
     - FireBase Setup 
     - Deploying our app to production
+    - Create SignUp user Account
+    - Implement SignIn userApi
+    - Created Redux store with User Slice
+    - Implemented Sign Out feature 
+    - Used update Profile Api of FireBase
+    - Use TMDB API for fetching movie (like IMDB)
     
 
 
