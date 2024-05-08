@@ -5,15 +5,17 @@ import VideoBackGround from './VideoBackGround';
 
 const MainContainer = () => {
     const movies= useSelector((store)=>store.movies?.nowPlayingMovies); 
+    const popularMovies= useSelector((store)=>store.movies?.popularMovies); 
+    // console.log(popularMovies);
 
     if(!movies) return ; 
 
-    const mainMovie= movies[1]; 
+    const mainMovie= movies[2]; 
 
     const {overview, original_title,id}= mainMovie; 
 
   return (
-    <div>
+    <div className=' bg-black ' >
         <VidoeTitle overview={overview} original_title={original_title}/>
         <VideoBackGround  movieId={id}/>
     </div>
